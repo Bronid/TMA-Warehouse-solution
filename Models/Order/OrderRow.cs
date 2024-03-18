@@ -6,18 +6,16 @@ namespace TMA_Warehouse_solution.Models.Order
     public class OrderRow
     {
         [Required]
-        public int Id { get; set; }
-        //[Required]
-        //public int RequestRowId { get; set; }
+        public Guid Id { get; set; }
         [Required]
-        public Item.Item Item { get; set; }
+        public Item.Item? Item { get; set; }
         [Required]
-        public ItemMeasurement Measurement { get; set; }
+        public ItemMeasurement? Measurement { get; set; }
         [Required]
         public int Quantity { get; set; }
         [Required]
         public float Price { get; set; }
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 
 }

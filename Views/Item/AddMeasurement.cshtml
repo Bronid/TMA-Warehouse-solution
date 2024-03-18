@@ -1,0 +1,11 @@
+﻿@model TMA_Warehouse_solution.Models.Item.ItemMeasurement
+
+<h1>Add New Item Measurement</h1>
+
+<form method="post" action="AddMeasurement">
+    <div>
+        <label>Item Measurement Name:</label>
+        <input type="text" class="form-control" name="Name" asp-for="Name" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Item Measurement</button>
+</form>

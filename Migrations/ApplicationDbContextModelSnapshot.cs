@@ -215,21 +215,20 @@ namespace TMA_Warehouse_solution.Migrations
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Item.Item", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ContactPersonId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ItemGroupId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ItemGroupId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("MeasurementId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("MeasurementId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Photo")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<float>("Price")
@@ -243,7 +242,6 @@ namespace TMA_Warehouse_solution.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StorageLocation")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -259,9 +257,9 @@ namespace TMA_Warehouse_solution.Migrations
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Item.ItemGroup", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -274,9 +272,9 @@ namespace TMA_Warehouse_solution.Migrations
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Item.ItemMeasurement", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -289,20 +287,19 @@ namespace TMA_Warehouse_solution.Migrations
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Order.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("StatusId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid?>("StatusId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -315,22 +312,21 @@ namespace TMA_Warehouse_solution.Migrations
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Order.OrderRow", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ItemId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("MeasurementId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("MeasurementId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("TEXT");
 
                     b.Property<float>("Price")
                         .HasColumnType("REAL");
@@ -351,9 +347,9 @@ namespace TMA_Warehouse_solution.Migrations
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Order.OrderStatus", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -450,9 +446,7 @@ namespace TMA_Warehouse_solution.Migrations
 
                     b.HasOne("TMA_Warehouse_solution.Models.Order.OrderStatus", "Status")
                         .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StatusId");
 
                     b.Navigation("Employee");
 

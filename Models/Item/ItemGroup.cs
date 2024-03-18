@@ -5,9 +5,14 @@ namespace TMA_Warehouse_solution.Models.Item
     public class ItemGroup
     {
         [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
+
+        public ItemGroup()
+        {
+            Id = Guid.NewGuid();
+        }
     }
 
 }

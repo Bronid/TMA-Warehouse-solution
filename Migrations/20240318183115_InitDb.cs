@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TMA_Warehouse_solution.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class InitDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -52,8 +52,7 @@ namespace TMA_Warehouse_solution.Migrations
                 name: "itemGroupModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -65,8 +64,7 @@ namespace TMA_Warehouse_solution.Migrations
                 name: "itemMeasurementModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -78,8 +76,7 @@ namespace TMA_Warehouse_solution.Migrations
                 name: "orderStatusModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Status = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -197,16 +194,15 @@ namespace TMA_Warehouse_solution.Migrations
                 name: "itemModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ItemGroupId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MeasurementId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ItemGroupId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    MeasurementId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
                     Price = table.Column<float>(type: "REAL", nullable: false),
                     Status = table.Column<string>(type: "TEXT", nullable: false),
-                    StorageLocation = table.Column<string>(type: "TEXT", nullable: false),
+                    StorageLocation = table.Column<string>(type: "TEXT", nullable: true),
                     ContactPersonId = table.Column<string>(type: "TEXT", nullable: true),
-                    Photo = table.Column<string>(type: "TEXT", nullable: false)
+                    Photo = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -234,11 +230,10 @@ namespace TMA_Warehouse_solution.Migrations
                 name: "orderModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     EmployeeId = table.Column<string>(type: "TEXT", nullable: false),
-                    Comment = table.Column<string>(type: "TEXT", nullable: false),
-                    StatusId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Comment = table.Column<string>(type: "TEXT", nullable: true),
+                    StatusId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -253,22 +248,20 @@ namespace TMA_Warehouse_solution.Migrations
                         name: "FK_orderModels_orderStatusModels_StatusId",
                         column: x => x.StatusId,
                         principalTable: "orderStatusModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "orderRowModels",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ItemId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MeasurementId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ItemId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    MeasurementId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
                     Price = table.Column<float>(type: "REAL", nullable: false),
-                    Comment = table.Column<string>(type: "TEXT", nullable: false),
-                    OrderId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Comment = table.Column<string>(type: "TEXT", nullable: true),
+                    OrderId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

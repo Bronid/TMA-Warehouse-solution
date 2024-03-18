@@ -7,14 +7,14 @@ namespace TMA_Warehouse_solution.Models.Order
     public class Order
     {
         [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Required]
-        public IdentityUser Employee { get; set; }
+        public IdentityUser? Employee { get; set; }
 
-        public string Comment { get; set; }
-        public OrderStatus Status { get; set; }
+        public string? Comment { get; set; }
+        public OrderStatus? Status { get; set; }
         [Required]
-        public List<OrderRow> RequestRows { get; set; }
+        public List<OrderRow>? RequestRows { get; set; }
     }
 
 }

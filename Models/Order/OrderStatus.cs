@@ -6,9 +6,9 @@ namespace TMA_Warehouse_solution.Models.Order
     public class OrderStatus
     {
         [Required]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Required]
-        public string Status { get; set; }
+        public string? Status { get; set; }
         
     }
 
