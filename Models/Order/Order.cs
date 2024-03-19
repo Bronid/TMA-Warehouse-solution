@@ -10,7 +10,6 @@ namespace TMA_Warehouse_solution.Models.Order
         public Guid Id { get; set; }
         [Required]
         public IdentityUser? Employee { get; set; }
-
         public string? Comment { get; set; }
         public OrderStatus? Status { get; set; }
         [Required]
