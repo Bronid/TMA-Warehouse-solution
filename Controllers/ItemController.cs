@@ -86,7 +86,7 @@ namespace TMA_Warehouse_solution.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Item>> GetItemById(int id)
+        public async Task<ActionResult<Item>> GetItemById(Guid id)
         {
             var item = await _context.itemModels.FindAsync(id);
 

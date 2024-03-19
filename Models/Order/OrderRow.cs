@@ -10,8 +10,6 @@ namespace TMA_Warehouse_solution.Models.Order
         [Required]
         public Item.Item? Item { get; set; }
         [Required]
-        public ItemMeasurement? Measurement { get; set; }
-        [Required]
         public int Quantity { get; set; }
         [Required]
         public float Price { get; set; }

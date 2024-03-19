@@ -17,7 +17,6 @@ namespace TMA_Warehouse_solution.Models.Database
         public DbSet<Item.Item> itemModels { get; set; }
         public DbSet<Order.Order> orderModels { get; set; }
         public DbSet<OrderRow> orderRowModels { get; set; }
-        public DbSet<OrderStatus> orderStatusModels { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -291,21 +291,16 @@ namespace TMA_Warehouse_solution.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Comment")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("EmployeeId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("StatusId")
-                        .HasColumnType("TEXT");
+                    b.Property<int?>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("orderModels");
                 });
@@ -322,9 +317,6 @@ namespace TMA_Warehouse_solution.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("MeasurementId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid?>("OrderId")
                         .HasColumnType("TEXT");
 
@@ -338,26 +330,9 @@ namespace TMA_Warehouse_solution.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("MeasurementId");
-
                     b.HasIndex("OrderId");
 
                     b.ToTable("orderRowModels");
-                });
-
-            modelBuilder.Entity("TMA_Warehouse_solution.Models.Order.OrderStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("orderStatusModels");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -444,13 +419,7 @@ namespace TMA_Warehouse_solution.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TMA_Warehouse_solution.Models.Order.OrderStatus", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId");
-
                     b.Navigation("Employee");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Order.OrderRow", b =>
@@ -461,20 +430,12 @@ namespace TMA_Warehouse_solution.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("TMA_Warehouse_solution.Models.Item.ItemMeasurement", "Measurement")
-                        .WithMany()
-                        .HasForeignKey("MeasurementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TMA_Warehouse_solution.Models.Order.Order", null)
                         .WithMany("RequestRows")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Item");
-
-                    b.Navigation("Measurement");
                 });
 
             modelBuilder.Entity("TMA_Warehouse_solution.Models.Order.Order", b =>

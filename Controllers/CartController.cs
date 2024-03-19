@@ -35,5 +35,33 @@ namespace TMA_Warehouse_solution.Controllers
             return View(currentOrder);
         }
 
+        [HttpPost]
+        public IActionResult UpdateCartItem(Guid itemId, int quantity, string comment)
+        {
+            List<CartItem> currentOrder = HttpContext.Session.GetObject<List<CartItem>>("CurrentOrder") ?? new List<CartItem>();
+            CartItem cartItemToUpdate = currentOrder.FirstOrDefault(item => item.Id == itemId);
+            if (cartItemToUpdate != null)
+            {
+                cartItemToUpdate.Quantity = quantity;
+                cartItemToUpdate.Comment = comment;
+                HttpContext.Session.SetObject("CurrentOrder", currentOrder);
+            }
+            return RedirectToAction("List");
+        }
+
+        [HttpPost]
+        public IActionResult RemoveCartItem(Guid itemId)
+        {
+            List<CartItem> currentOrder = HttpContext.Session.GetObject<List<CartItem>>("CurrentOrder") ?? new List<CartItem>();
+            CartItem cartItemToRemove = currentOrder.FirstOrDefault(item => item.Id == itemId);
+            if (cartItemToRemove != null)
+            {
+                currentOrder.Remove(cartItemToRemove);
+                HttpContext.Session.SetObject("CurrentOrder", currentOrder);
+            }
+            return RedirectToAction("List");
+        }
     }
+
+
 }

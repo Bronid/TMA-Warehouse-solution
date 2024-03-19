@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TMA_Warehouse_solution.Migrations
 {
-    public partial class InitDb : Migration
+    public partial class initDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,18 +70,6 @@ namespace TMA_Warehouse_solution.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_itemMeasurementModels", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "orderStatusModels",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Status = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_orderStatusModels", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,6 +179,25 @@ namespace TMA_Warehouse_solution.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "orderModels",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    EmployeeId = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_orderModels", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_orderModels_AspNetUsers_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "itemModels",
                 columns: table => new
                 {
@@ -227,37 +234,11 @@ namespace TMA_Warehouse_solution.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "orderModels",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    EmployeeId = table.Column<string>(type: "TEXT", nullable: false),
-                    Comment = table.Column<string>(type: "TEXT", nullable: true),
-                    StatusId = table.Column<Guid>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_orderModels", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_orderModels_AspNetUsers_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_orderModels_orderStatusModels_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "orderStatusModels",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "orderRowModels",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     ItemId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    MeasurementId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
                     Price = table.Column<float>(type: "REAL", nullable: false),
                     Comment = table.Column<string>(type: "TEXT", nullable: true),
@@ -266,12 +247,6 @@ namespace TMA_Warehouse_solution.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_orderRowModels", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_orderRowModels_itemMeasurementModels_MeasurementId",
-                        column: x => x.MeasurementId,
-                        principalTable: "itemMeasurementModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_orderRowModels_itemModels_ItemId",
                         column: x => x.ItemId,
@@ -343,19 +318,9 @@ namespace TMA_Warehouse_solution.Migrations
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orderModels_StatusId",
-                table: "orderModels",
-                column: "StatusId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_orderRowModels_ItemId",
                 table: "orderRowModels",
                 column: "ItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_orderRowModels_MeasurementId",
-                table: "orderRowModels",
-                column: "MeasurementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_orderRowModels_OrderId",
@@ -400,9 +365,6 @@ namespace TMA_Warehouse_solution.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "orderStatusModels");
         }
     }
 }
