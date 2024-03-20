@@ -10,7 +10,7 @@ namespace TMA_Warehouse_solution.Controllers
         {
             public Guid Id { get; set; }
             public int Quantity { get; set; }
-            public string Comment { get; set; }
+            public string? Comment { get; set; }
         }
 
         public IActionResult AddToCart(Guid itemId, int quantity, string comment)

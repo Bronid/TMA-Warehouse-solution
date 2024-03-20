@@ -11,7 +11,7 @@ using TMA_Warehouse_solution.Models.Database;
 namespace TMA_Warehouse_solution.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240319232112_initDb")]
+    [Migration("20240320164956_initDb")]
     partial class initDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -293,11 +293,14 @@ namespace TMA_Warehouse_solution.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("EmployeeId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Status")
+                    b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");

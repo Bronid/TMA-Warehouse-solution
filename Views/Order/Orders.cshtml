@@ -1,0 +1,148 @@
+﻿@model List<TMA_Warehouse_solution.Models.Order.Order>
+
+<h1>Orders</h1>
+
+@if (Model.Count > 0)
+{
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order Id</th>
+                    <th>User</th>
+                    <th>Status</th>
+                    <th>Comment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var order in Model)
+            {
+                        <tr>
+                            <td>@order.Id</td>
+                            <td>@order.Employee.Email</td>
+                            <td>@order.Status.ToString()</td>
+                            <td>@order.Comment</td>
+                            <td>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#orderDetailsModal_@order.Id">Details</button>
+                        @if (order.Status == TMA_Warehouse_solution.Models.Order.OrderStatus.NEW)
+                        {
+                                        <button class="btn btn-success approve-order" data-order-id="@order.Id">Approve</button>
+                                        <button class="btn btn-danger reject-order" data-order-id="@order.Id">Reject</button>
+                        }
+                            </td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+
+    @foreach (var order in Model)
+    {
+                <div class="modal fade" id="orderDetailsModal_@order.Id" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h6>Order Id: @order.Id</h6>
+                                <p>User: @order.Employee.Email</p>
+                                <p>Status: @order.Status</p>
+                                <h6>Order Items:</h6>
+                                <ul>
+                            @foreach (var rr in order.RequestRows)
+                            {
+                                            <li>Item ID: @rr.Item.Id</li>
+                                            <li>Item Group: @rr.Item.ItemGroup.Name</li>
+                                            <li>Measurement: @rr.Item.Measurement.Name</li>
+                                            <li>Quantity: @rr.Quantity</li>
+                                            <li>Price: @rr.Item.Price</li>
+                                            <li>Storage Location: @rr.Item.StorageLocation</li>
+                                            <hr />
+                            }
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    }
+}
+else
+{
+        <p>No orders available.</p>
+}
+
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Order</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectForm">
+                    <input type="hidden" id="orderId" name="orderId" />
+                    <div class="form-group">
+                        <label for="rejectComment">Comment:</label>
+                        <textarea class="form-control" id="rejectComment" name="comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('.modal').modal('hide');
+
+            function openModal(modalId) {
+                $(modalId).modal('show');
+            }
+
+            $('[data-toggle="modal"]').click(function () {
+                var modalId = $(this).data('target');
+                openModal(modalId);
+            });
+
+            $('.modal').on('click', '[data-dismiss="modal"]', function () {
+                $(this).closest('.modal').modal('hide');
+            });
+
+            $('.approve-order').click(function () {
+                var orderId = $(this).data('order-id');
+                $.post('@Url.Action("ApproveOrder", "Order")', { orderId: orderId }, function () {
+                    location.reload();
+                }).fail(function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                });
+            });
+
+            $('.reject-order').click(function () {
+                var orderId = $(this).data('order-id');
+                $('#rejectModal').modal('show');
+                $('#rejectModal').find('#orderId').val(orderId);
+            });
+
+            $('#rejectForm').submit(function (event) {
+                event.preventDefault();
+                var orderId = $('#orderId').val();
+                var comment = $('#rejectComment').val();
+                $.post('@Url.Action("RejectOrder", "Order")', { orderId: orderId, comment: comment }, function () {
+                    location.reload();
+                }).fail(function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                });
+            });
+        });
+    </script>
+}

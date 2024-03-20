@@ -184,7 +184,8 @@ namespace TMA_Warehouse_solution.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     EmployeeId = table.Column<string>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: true)
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    Comment = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -61,6 +61,10 @@ namespace TMA_Warehouse_solution
                     name: "cart",
                     pattern: "Cart/List",
                     defaults: new { controller = "Cart", action = "List" });
+
+                endpoints.MapControllerRoute(
+                    name: "items",
+                    pattern: "{controller=Item}/{action=Index}/{id?}");
             });
 
 

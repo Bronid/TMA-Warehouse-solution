@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,31 @@ namespace TMA_Warehouse_solution.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var items = _context.itemModels.ToList();
+            return View(items);
+        }
+
+        [Authorize(Roles = "Coordinator")]
+        [HttpGet]
+        public async Task<IActionResult> MyItems()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var items = _context.itemModels
+                .Include(i => i.ContactPerson)
+                .Include(i => i.ItemGroup)
+                .Include(i => i.Measurement)
+                .Where(item => item.ContactPerson.Id == currentUser.Id).ToList();
+            return View(items);
+        }
 
         [Authorize(Roles = "Administrator")]
         [HttpGet]
@@ -54,7 +80,7 @@ namespace TMA_Warehouse_solution.Controllers
             _context.itemMeasurementModels.Add(addMeasurement);
             _context.SaveChanges();
 
-            return RedirectToAction("AddItemGroup");
+            return RedirectToAction("AddMeasurement");
         }
 
         [Authorize(Roles = "Coordinator")]
@@ -81,38 +107,80 @@ namespace TMA_Warehouse_solution.Controllers
             _context.itemModels.Add(addItem);
             _context.SaveChanges();
 
-            return RedirectToAction("AddItem");
+            return RedirectToAction("MyItems");
         }
 
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Item>> GetItemById(Guid id)
+        [Authorize(Roles = "Coordinator")]
+        [HttpGet]
+        public async Task<IActionResult> EditItem(Guid id)
         {
-            var item = await _context.itemModels.FindAsync(id);
+            var item = _context.itemModels.Include(i => i.ContactPerson).First(predicate => predicate.Id == id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (item.ContactPerson.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            ViewBag.ItemGroups = _context.itemGroupModels.ToList();
+            ViewBag.Measurements = _context.itemMeasurementModels.ToList();
+
+            return View(item);
+        }
+
+        [Authorize(Roles = "Coordinator")]
+        [HttpPut]
+        public async Task<IActionResult> EditItem(Guid id, int quantity, float price, string status, string storageLocation)
+        {
+            var item = await _context.itemModels.Include(i => i.ContactPerson).FirstOrDefaultAsync(predicate => predicate.Id == id);
 
             if (item == null)
             {
                 return NotFound();
             }
 
-            return item;
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (item.ContactPerson.Id != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            item.Quantity = quantity;
+            item.Price = price;
+            item.Status = status;
+            item.StorageLocation = storageLocation;
+
+            _context.SaveChanges();
+
+            return Ok(new { success = true });
         }
 
-        [Authorize(Roles = "Administrator")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteItem(int id)
+
+        [Authorize(Roles = "Coordinator")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteItem(Guid id)
         {
-            var item = await _context.itemModels.FindAsync(id);
+            var item = _context.itemModels.Include(i => i.ContactPerson).First(predicate => predicate.Id == id);
+
             if (item == null)
             {
                 return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (item.ContactPerson.Id != currentUser.Id)
+            {
+                return Forbid();
             }
 
             _context.itemModels.Remove(item);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
-            return NoContent();
+            return Ok(new { success = true });
         }
-
     }
 }
