@@ -8,7 +8,8 @@
             <thead>
                 <tr>
                     <th>Order Id</th>
-                    <th>User</th>
+                    <th>Employee</th>
+                    <th>Coordinator</th>
                     <th>Status</th>
                     <th>Comment</th>
                     <th>Action</th>
@@ -20,11 +21,12 @@
                         <tr>
                             <td>@order.Id</td>
                             <td>@order.Employee.Email</td>
+                            <td>@order.RequestRows[0].Item.ContactPerson.Email</td>
                             <td>@order.Status.ToString()</td>
                             <td>@order.Comment</td>
                             <td>
                                 <button class="btn btn-primary" data-toggle="modal" data-target="#orderDetailsModal_@order.Id">Details</button>
-                        @if (order.Status == TMA_Warehouse_solution.Models.Order.OrderStatus.NEW)
+                        @if (order.Status == TMA_Warehouse_solution.Models.Order.OrderStatus.NEW && User.IsInRole("Coordinator"))
                         {
                                         <button class="btn btn-success approve-order" data-order-id="@order.Id">Approve</button>
                                         <button class="btn btn-danger reject-order" data-order-id="@order.Id">Reject</button>
@@ -55,11 +57,13 @@
                             @foreach (var rr in order.RequestRows)
                             {
                                             <li>Item ID: @rr.Item.Id</li>
+                                            <li>Name: @rr.Item.Name</li>
                                             <li>Item Group: @rr.Item.ItemGroup.Name</li>
                                             <li>Measurement: @rr.Item.Measurement.Name</li>
                                             <li>Quantity: @rr.Quantity</li>
                                             <li>Price: @rr.Item.Price</li>
                                             <li>Storage Location: @rr.Item.StorageLocation</li>
+                                            <li>Comment: @rr.Comment</li>
                                             <hr />
                             }
                                 </ul>

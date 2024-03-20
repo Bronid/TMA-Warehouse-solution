@@ -8,6 +8,7 @@
             <thead>
                 <tr>
                     <th>Item Id</th>
+                    <th>Name</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Status</th>
@@ -20,6 +21,9 @@
             {
                         <tr>
                             <td>@item.Id</td>
+                            <td>
+                                <input type="text" class="form-control item-name" value="@item.Name" data-item-id="@item.Id" />
+                            </td>
                             <td>
                                 <input type="number" class="form-control item-quantity" value="@item.Quantity" data-item-id="@item.Id" />
                             </td>
@@ -53,6 +57,7 @@ else
             $(document).ready(function () {
                 $('.update-item').click(function () {
                     var itemId = $(this).data('item-id');
+                    var name = $('input[data-item-id="' + itemId + '"].item-name').val();
                     var quantity = $('input[data-item-id="' + itemId + '"].item-quantity').val();
                     var price = $('input[data-item-id="' + itemId + '"].item-price').val();
                     var status = $('input[data-item-id="' + itemId + '"].item-status').val();
@@ -61,7 +66,7 @@ else
                     $.ajax({
                         url: '@Url.Action("EditItem", "Item")',
                         type: 'PUT',
-                        data: { id: itemId, quantity: quantity, price: price, status: status, storageLocation: location },
+                            data: { id: itemId, name: name, quantity: quantity, price: price, status: status, storageLocation: location },
                         success: function (result) {
                             location.reload();
                         },

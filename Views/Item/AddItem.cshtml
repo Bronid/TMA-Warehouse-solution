@@ -4,6 +4,10 @@
 
 <form method="post" action="AddItem">
     <div>
+        <label>Name:</label>
+        <input type="text" class="form-control" name="Name" asp-for="Name" required />
+    </div>
+    <div>
         <label>Item Group:</label>
         <select id="itemGroupId" name="ItemGroupId" class="form-control" required>
             @foreach (var group in ViewBag.ItemGroups)
@@ -57,4 +61,5 @@
     document.getElementById('measurementId').addEventListener('change', function() {
         document.getElementById('measurementIdHidden').value = this.value;
     });
+
 </script>

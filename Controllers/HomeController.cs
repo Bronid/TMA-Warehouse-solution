@@ -21,7 +21,7 @@ namespace TMA_Warehouse_solution.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string filter)
         {
             var items = _context.itemModels
                 .Include(i => i.ItemGroup)
@@ -29,12 +29,13 @@ namespace TMA_Warehouse_solution.Controllers
                 .Include(i => i.ContactPerson)
                 .ToList();
 
-            return View(model:items);
-        }
 
-        public IActionResult Privacy()
-        {
-            return View();
+            if (!string.IsNullOrEmpty(filter))
+            {
+                items = items.Where(i => i.Name.Contains(filter)).ToList();
+            }
+
+            return View(model:items);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

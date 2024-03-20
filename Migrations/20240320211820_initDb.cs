@@ -203,6 +203,7 @@ namespace TMA_Warehouse_solution.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     ItemGroupId = table.Column<Guid>(type: "TEXT", nullable: false),
                     MeasurementId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),

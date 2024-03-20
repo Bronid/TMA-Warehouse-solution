@@ -40,8 +40,11 @@ namespace TMA_Warehouse_solution.Controllers
                 .Include(o => o.RequestRows)
                     .ThenInclude(rr => rr.Item)
                         .ThenInclude(i => i.Measurement)
+                 .Include(o => o.RequestRows)
+                    .ThenInclude(rr => rr.Item)
+                       .ThenInclude(i => i.ContactPerson)
                 .Include(o => o.Employee)
-                .Where(o => o.RequestRows.Any(r => r.Item.ContactPerson.Id == currentUser.Id))
+                .Where(o => o.RequestRows.Any(o => o.Item.ContactPerson == currentUser))
                 .ToList();
 
                 return View(orders);
@@ -56,6 +59,9 @@ namespace TMA_Warehouse_solution.Controllers
                 .Include(o => o.RequestRows)
                     .ThenInclude(rr => rr.Item)
                         .ThenInclude(i => i.Measurement)
+                 .Include(o => o.RequestRows)
+                    .ThenInclude(rr => rr.Item)
+                       .ThenInclude(i => i.ContactPerson)
                 .Include(o => o.Employee)
                 .Where(o => o.Employee == currentUser)
                 .ToList();

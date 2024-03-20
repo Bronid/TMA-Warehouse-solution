@@ -8,6 +8,8 @@ namespace TMA_Warehouse_solution.Models.Item
         [Required]
         public Guid Id { get; set; }
         [Required]
+        public string Name { get; set; }
+        [Required]
         public ItemGroup? ItemGroup { get; set; }
         [Required]
         public ItemMeasurement? Measurement { get; set; }

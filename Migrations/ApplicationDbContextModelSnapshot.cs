@@ -228,6 +228,10 @@ namespace TMA_Warehouse_solution.Migrations
                     b.Property<Guid>("MeasurementId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Photo")
                         .HasColumnType("TEXT");
 

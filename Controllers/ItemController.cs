@@ -134,7 +134,7 @@ namespace TMA_Warehouse_solution.Controllers
 
         [Authorize(Roles = "Coordinator")]
         [HttpPut]
-        public async Task<IActionResult> EditItem(Guid id, int quantity, float price, string status, string storageLocation)
+        public async Task<IActionResult> EditItem(Guid id, string name, int quantity, float price, string status, string storageLocation)
         {
             var item = await _context.itemModels.Include(i => i.ContactPerson).FirstOrDefaultAsync(predicate => predicate.Id == id);
 
@@ -149,6 +149,7 @@ namespace TMA_Warehouse_solution.Controllers
                 return Forbid();
             }
 
+            item.Name = name;
             item.Quantity = quantity;
             item.Price = price;
             item.Status = status;

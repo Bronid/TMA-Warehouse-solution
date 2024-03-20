@@ -11,7 +11,7 @@ using TMA_Warehouse_solution.Models.Database;
 namespace TMA_Warehouse_solution.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240320164956_initDb")]
+    [Migration("20240320211820_initDb")]
     partial class initDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -228,6 +228,10 @@ namespace TMA_Warehouse_solution.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("MeasurementId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Photo")
