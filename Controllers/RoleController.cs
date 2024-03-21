@@ -16,14 +16,14 @@ namespace TMA_Warehouse_solution.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult ManageUserRoles()
+        public IActionResult Edit()
         {
             var users = _userManager.Users.ToList();
             return View(users);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddEmployeeRole(string userId)
+        public async Task<IActionResult> SetEmployeeRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -35,11 +35,11 @@ namespace TMA_Warehouse_solution.Controllers
 
             await _userManager.AddToRoleAsync(user, "Employee");
 
-            return RedirectToAction("ManageUserRoles");
+            return RedirectToAction("Edit");
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCoordinatorRole(string userId)
+        public async Task<IActionResult> SetCoordinatorRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -51,7 +51,7 @@ namespace TMA_Warehouse_solution.Controllers
 
             await _userManager.AddToRoleAsync(user, "Coordinator");
 
-            return RedirectToAction("ManageUserRoles");
+            return RedirectToAction("Edit");
         }
     }
 }
