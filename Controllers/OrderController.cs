@@ -69,6 +69,23 @@ namespace TMA_Warehouse_solution.Controllers
                 return View(orders);
             }
 
+            else if (User.IsInRole("Administrator"))
+            {
+                var orders = _dbContext.orderModels
+                .Include(o => o.RequestRows)
+                    .ThenInclude(rr => rr.Item)
+                        .ThenInclude(i => i.ItemGroup)
+                .Include(o => o.RequestRows)
+                    .ThenInclude(rr => rr.Item)
+                        .ThenInclude(i => i.Measurement)
+                 .Include(o => o.RequestRows)
+                    .ThenInclude(rr => rr.Item)
+                       .ThenInclude(i => i.ContactPerson)
+                .Include(o => o.Employee).ToList();
+
+                return View(orders);
+            }
+
             return View();
         }
 
@@ -124,7 +141,7 @@ namespace TMA_Warehouse_solution.Controllers
             return RedirectToAction("List", "Cart");
         }
 
-        [Authorize(Roles = "Coordinator")]
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpPost]
         public async Task<IActionResult> ApproveOrder(Guid orderId)
         {
@@ -139,7 +156,7 @@ namespace TMA_Warehouse_solution.Controllers
                 return NotFound($"Order with ID {orderId} not found.");
             }
 
-            if (!order.RequestRows.Any(rr => rr.Item.ContactPerson.Id == currentUser.Id))
+            if (!order.RequestRows.Any(rr => rr.Item.ContactPerson.Id == currentUser.Id) && !User.IsInRole("Administrator"))
             {
                 return Forbid();
             }
@@ -164,7 +181,7 @@ namespace TMA_Warehouse_solution.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = "Coordinator")]
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpPost]
         public async Task<IActionResult> RejectOrder(Guid orderId, string comment)
         {
@@ -176,7 +193,7 @@ namespace TMA_Warehouse_solution.Controllers
 
             var currentUser = await _userManager.GetUserAsync(User);
 
-            if (!order.RequestRows.Any(rr => rr.Item.ContactPerson == currentUser))
+            if (!order.RequestRows.Any(rr => rr.Item.ContactPerson == currentUser) && !User.IsInRole("Administrator"))
             {
                 return Forbid();
             }

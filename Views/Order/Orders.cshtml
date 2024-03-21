@@ -26,7 +26,7 @@
                             <td>@order.Comment</td>
                             <td>
                                 <button class="btn btn-primary" data-toggle="modal" data-target="#orderDetailsModal_@order.Id">Details</button>
-                        @if (order.Status == TMA_Warehouse_solution.Models.Order.OrderStatus.NEW && User.IsInRole("Coordinator"))
+                        @if (order.Status == TMA_Warehouse_solution.Models.Order.OrderStatus.NEW && (User.IsInRole("Coordinator") || User.IsInRole("Administrator")))
                         {
                                         <button class="btn btn-success approve-order" data-order-id="@order.Id">Approve</button>
                                         <button class="btn btn-danger reject-order" data-order-id="@order.Id">Reject</button>
@@ -56,15 +56,19 @@
                                 <ul>
                             @foreach (var rr in order.RequestRows)
                             {
-                                            <li>Item ID: @rr.Item.Id</li>
-                                            <li>Name: @rr.Item.Name</li>
-                                            <li>Item Group: @rr.Item.ItemGroup.Name</li>
-                                            <li>Measurement: @rr.Item.Measurement.Name</li>
-                                            <li>Quantity: @rr.Quantity</li>
-                                            <li>Price: @rr.Item.Price</li>
-                                            <li>Storage Location: @rr.Item.StorageLocation</li>
-                                            <li>Comment: @rr.Comment</li>
-                                            <hr />
+                                    <li>Item ID: @rr.Item.Id</li>
+                                    <li>Name: @rr.Item.Name</li>
+                                    @if (!string.IsNullOrEmpty(rr.Item.ImagePath))
+                                    {
+                                    <li>Image: <img src="@rr.Item.ImagePath" alt="Item Image" class="item-image" style="max-width: 50px; max-height: 50px;" /></li>
+                                    }
+                                    <li>Item Group: @rr.Item.ItemGroup.Name</li>
+                                    <li>Measurement: @rr.Item.Measurement.Name</li>
+                                    <li>Quantity: @rr.Quantity</li>
+                                    <li>Price: @rr.Item.Price</li>
+                                    <li>Storage Location: @rr.Item.StorageLocation</li>
+                                    <li>Comment: @rr.Comment</li>
+                                    <hr />
                             }
                                 </ul>
                             </div>

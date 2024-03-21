@@ -211,7 +211,7 @@ namespace TMA_Warehouse_solution.Migrations
                     Status = table.Column<string>(type: "TEXT", nullable: false),
                     StorageLocation = table.Column<string>(type: "TEXT", nullable: true),
                     ContactPersonId = table.Column<string>(type: "TEXT", nullable: true),
-                    Photo = table.Column<string>(type: "TEXT", nullable: true)
+                    ImagePath = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

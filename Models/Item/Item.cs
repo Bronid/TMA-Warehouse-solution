@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TMA_Warehouse_solution.Models.Item
 {
@@ -21,7 +22,9 @@ namespace TMA_Warehouse_solution.Models.Item
         public string? Status { get; set; } //TODO: Create Status model
         public string? StorageLocation { get; set; } //TODO: Create Location model
         public IdentityUser? ContactPerson { get; set; }
-        public string? Photo { get; set; } //URL to photo
+        public string? ImagePath { get; set; }
+        [NotMapped]
+        public IFormFile Photo { get; set; }
 
         public Item()
         {

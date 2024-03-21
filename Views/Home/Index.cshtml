@@ -1,103 +1,108 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model List<TMA_Warehouse_solution.Models.Item.Item>
 
-@model List<TMA_Warehouse_solution.Models.Item.Item>
-
+<h1>Items Assortment</h1>
 <div class="text-center">
     <h1>Items Assortment</h1>
     <form action="/" method="get" class="d-flex my-3">
-    <input class="form-control me-2" type="search" placeholder="Search by Name" aria-label="Search" name="filter" value="@Context.Request.Query["filter"]">
-    <button class="btn btn-outline-success" type="submit">Search</button>
+        <input class="form-control me-2" type="search" placeholder="Search by Name" aria-label="Search" name="filter" value="@Context.Request.Query["filter"]">
+        <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
+    <button class="btn btn-outline-primary" onclick="sortItemsByPrice()">Sort by Price</button>
     <div class="row">
         @foreach (var item in Model)
         {
-                 <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">@item.Name</h5>
-                                <p class="card-text">Group: @item.ItemGroup.Name</p>
-                                <p class="card-text">Quantity: @item.Quantity @item.Measurement.Name</p>
-                                <p class="card-text">Price: @item.Price UAH</p>
-                                <p class="card-text">Location: @item.StorageLocation</p>
-                                <p class="card-text">Status: @item.Status</p>
-
-                                @if (User.IsInRole("Employee"))
-                                {
-                                   <button type="button" class="btn btn-primary" onclick="openCartModal('@item.Id', '@item.Price')">Add To Cart</button>
-                                }
-                            </div>
-                        </div>
-                 </div>
+            <div class="col-md-3 mb-2">
+                <div class="card">
+                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        <img src="@item.ImagePath" class="card-img-top" alt="Item Image">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">Group: @item.ItemGroup.Name</p>
+                        <p class="card-text">Quantity: @item.Quantity @item.Measurement.Name</p>
+                        <p class="card-text">Price: @item.Price UAH</p>
+                        <p class="card-text">Location: @item.StorageLocation</p>
+                        <p class="card-text">Status: @item.Status</p>
+                        @if (User.IsInRole("Employee"))
+                        {
+                            <button type="button" class="btn btn-primary" onclick="openCartModal('@item.Id', '@item.Price')">Add To Cart</button>
+                        }
+                    </div>
+                </div>
+            </div>
         }
     </div>
 </div>
 
-
 <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="cartModalLabel">Add To Cart</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="addToCartForm">
-            <input type="hidden" id="itemId">
-            <input type="hidden" id="itemPrice">
-            <div class="form-group">
-                <label for="quantity">Quantity:</label>
-                <input type="number" class="form-control" id="quantity" name="quantity" value="1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Add To Cart</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="form-group">
-                <label for="comment">Comment:</label>
-                <input type="text" class="form-control" id="comment" name="comment">
+            <div class="modal-body">
+                <form id="addToCartForm">
+                    <input type="hidden" id="itemId">
+                    <input type="hidden" id="itemPrice">
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <input type="text" class="form-control" id="comment" name="comment">
+                    </div>
+                    <p id="totalPrice">Total Price: UAH</p>
+                </form>
             </div>
-            <p id="totalPrice">Total Price: UAH</p>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="addToCart()">Add To Cart</button>
-      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addToCart()">Add To Cart</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @section scripts {
-        <script>
-            function openCartModal(itemId, itemPrice) {
-                $('#cartModal').modal('show');
-                $('#itemId').val(itemId);
-                $('#itemPrice').val(itemPrice);
-                updateTotalPrice();
-            }
+    <script>
+        function openCartModal(itemId, itemPrice) {
+            $('#cartModal').modal('show');
+            $('#itemId').val(itemId);
+            $('#itemPrice').val(itemPrice);
+            updateTotalPrice();
+        }
 
-            $('.modal').on('click', '[data-dismiss="modal"]', function () {
-                   $(this).closest('.modal').modal('hide');
+        $('.modal').on('click', '[data-dismiss="modal"]', function () {
+            $(this).closest('.modal').modal('hide');
+        });
+
+        function updateTotalPrice() {
+            var quantity = parseInt($('#quantity').val());
+            var itemPrice = parseFloat($('#itemPrice').val());
+            var totalPrice = quantity * itemPrice;
+            $('#totalPrice').text('Total Price: ' + totalPrice.toFixed(2) + ' UAH');
+        }
+
+        $('#quantity').on('input', function () {
+            updateTotalPrice();
+        });
+
+        function addToCart() {
+            var itemId = $('#itemId').val();
+            var quantity = $('#quantity').val();
+            var comment = $('#comment').val();
+            $.post('@Url.Action("AddToCart", "Cart")', { itemId: itemId, quantity: quantity, comment: comment }, function () {
+                location.reload();
             });
+        }
 
-            function updateTotalPrice() {
-                var quantity = parseInt($('#quantity').val());
-                var itemPrice = parseFloat($('#itemPrice').val());
-                var totalPrice = quantity * itemPrice;
-                $('#totalPrice').text('Total Price: ' + totalPrice.toFixed(2) + ' UAH');
-            }
-
-            $('#quantity').on('input', function() {
-                updateTotalPrice();
-            });
-
-            function addToCart() {
-                var itemId = $('#itemId').val();
-                var quantity = $('#quantity').val();
-                var comment = $('#comment').val();
-                $.post('@Url.Action("AddToCart", "Cart")', { itemId: itemId, quantity: quantity, comment: comment }, function () {
-                    location.reload();
-                });
-            }
-        </script>
+        function sortItemsByPrice() {
+            var url = '@Url.Action("Index", "Home")' + '?sortBy=price';
+            window.location.href = url;
+        }
+    </script>
 }

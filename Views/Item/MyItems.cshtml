@@ -13,6 +13,7 @@
                     <th>Price</th>
                     <th>Status</th>
                     <th>Storage Location</th>
+                    <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -37,6 +38,17 @@
                                 <input type="text" class="form-control item-location" value="@item.StorageLocation" data-item-id="@item.Id" />
                             </td>
                             <td>
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                                        <img src="@item.ImagePath" alt="Item Image" class="item-image" style="max-width: 50px; max-height: 50px;" />
+                        }
+                        else
+                        {
+                                        <p>No image available</p>
+                        }
+                                <input type="file" class="form-control item-photo" data-item-id="@item.Id" />
+                            </td>
+                            <td>
                                 <button class="btn btn-primary update-item" data-item-id="@item.Id">Update</button>
                                 <button class="btn btn-danger delete-item" data-item-id="@item.Id">Delete</button>
                             </td>
@@ -52,6 +64,12 @@ else
 
 <a href="@Url.Action("AddItem", "Item")" class="btn btn-success">Add Item</a>
 
+@if (User.IsInRole("Administrator"))
+{
+        <a href="@Url.Action("AddItemGroup", "Item")" class="btn btn-success">Add Item Group</a>
+        <a href="@Url.Action("AddMeasurement", "Item")" class="btn btn-success">Add Item Measurement</a>
+}
+
 @section scripts {
         <script>
             $(document).ready(function () {
@@ -62,11 +80,24 @@ else
                     var price = $('input[data-item-id="' + itemId + '"].item-price').val();
                     var status = $('input[data-item-id="' + itemId + '"].item-status').val();
                     var location = $('input[data-item-id="' + itemId + '"].item-location').val();
+                    var fileInput = $('input[data-item-id="' + itemId + '"].item-photo')[0];
+                    var file = fileInput.files[0];
+
+                    var formData = new FormData();
+                    formData.append('id', itemId);
+                    formData.append('name', name);
+                    formData.append('quantity', quantity);
+                    formData.append('price', price);
+                    formData.append('status', status);
+                    formData.append('storageLocation', location);
+                    formData.append('photo', file);
 
                     $.ajax({
                         url: '@Url.Action("EditItem", "Item")',
                         type: 'PUT',
-                            data: { id: itemId, name: name, quantity: quantity, price: price, status: status, storageLocation: location },
+                        data: formData,
+                        processData: false,
+                        contentType: false,
                         success: function (result) {
                             location.reload();
                         },

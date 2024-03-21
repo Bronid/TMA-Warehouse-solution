@@ -11,7 +11,7 @@ using TMA_Warehouse_solution.Models.Database;
 namespace TMA_Warehouse_solution.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240320211820_initDb")]
+    [Migration("20240321120557_initDb")]
     partial class initDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,6 +224,9 @@ namespace TMA_Warehouse_solution.Migrations
                     b.Property<string>("ContactPersonId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("ItemGroupId")
                         .HasColumnType("TEXT");
 
@@ -232,9 +235,6 @@ namespace TMA_Warehouse_solution.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Photo")
                         .HasColumnType("TEXT");
 
                     b.Property<float>("Price")

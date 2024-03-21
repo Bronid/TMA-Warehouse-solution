@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using TMA_Warehouse_solution.Models;
 using TMA_Warehouse_solution.Models.Database;
 using TMA_Warehouse_solution.Models.Item;
@@ -16,11 +17,13 @@ namespace TMA_Warehouse_solution.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ItemController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public ItemController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -30,7 +33,7 @@ namespace TMA_Warehouse_solution.Controllers
             return View(items);
         }
 
-        [Authorize(Roles = "Coordinator")]
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpGet]
         public async Task<IActionResult> MyItems()
         {
@@ -41,12 +44,25 @@ namespace TMA_Warehouse_solution.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var items = _context.itemModels
+            if (User.IsInRole("Administrator"))
+            {
+                var items = _context.itemModels
+                .Include(i => i.ContactPerson)
+                .Include(i => i.ItemGroup)
+                .Include(i => i.Measurement)
+                .ToList();
+                return View(items);
+            }
+            else
+            {
+                var items = _context.itemModels
                 .Include(i => i.ContactPerson)
                 .Include(i => i.ItemGroup)
                 .Include(i => i.Measurement)
                 .Where(item => item.ContactPerson.Id == currentUser.Id).ToList();
-            return View(items);
+                return View(items);
+            }
+
         }
 
         [Authorize(Roles = "Administrator")]
@@ -83,7 +99,7 @@ namespace TMA_Warehouse_solution.Controllers
             return RedirectToAction("AddMeasurement");
         }
 
-        [Authorize(Roles = "Coordinator")]
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpGet]
         public IActionResult AddItem()
         {
@@ -92,7 +108,7 @@ namespace TMA_Warehouse_solution.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Coordinator")]
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpPost]
         public async Task<IActionResult> AddItem(Item addItem, Guid itemGroupId, Guid measurementId)
         {
@@ -100,6 +116,25 @@ namespace TMA_Warehouse_solution.Controllers
 
             var itemGroup = _context.itemGroupModels.Find(itemGroupId);
             var measurement = _context.itemMeasurementModels.Find(measurementId);
+
+            var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            if (addItem.Photo != null && addItem.Photo.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(addItem.Photo.FileName);
+                var imagePath = Path.Combine(uploadFolder, fileName);
+
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await addItem.Photo.CopyToAsync(stream);
+                }
+
+                addItem.ImagePath = "/images/" + fileName;
+            }
 
             addItem.ItemGroup = itemGroup;
             addItem.Measurement = measurement;
@@ -110,7 +145,9 @@ namespace TMA_Warehouse_solution.Controllers
             return RedirectToAction("MyItems");
         }
 
-        [Authorize(Roles = "Coordinator")]
+
+
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpGet]
         public async Task<IActionResult> EditItem(Guid id)
         {
@@ -121,7 +158,7 @@ namespace TMA_Warehouse_solution.Controllers
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (item.ContactPerson.Id != currentUser.Id)
+            if (item.ContactPerson.Id != currentUser.Id && !User.IsInRole("Administrator"))
             {
                 return Forbid();
             }
@@ -132,9 +169,9 @@ namespace TMA_Warehouse_solution.Controllers
             return View(item);
         }
 
-        [Authorize(Roles = "Coordinator")]
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpPut]
-        public async Task<IActionResult> EditItem(Guid id, string name, int quantity, float price, string status, string storageLocation)
+        public async Task<IActionResult> EditItem(Guid id, string name, int quantity, float price, string status, string storageLocation, IFormFile photo)
         {
             var item = await _context.itemModels.Include(i => i.ContactPerson).FirstOrDefaultAsync(predicate => predicate.Id == id);
 
@@ -144,9 +181,28 @@ namespace TMA_Warehouse_solution.Controllers
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (item.ContactPerson.Id != currentUser.Id)
+            if (item.ContactPerson.Id != currentUser.Id && !User.IsInRole("Administrator"))
             {
                 return Forbid();
+            }
+
+            var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            if (photo != null && photo.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+                var imagePath = Path.Combine(uploadFolder, fileName);
+
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await photo.CopyToAsync(stream);
+                }
+
+                item.ImagePath = "/images/" + fileName;
             }
 
             item.Name = name;
@@ -161,7 +217,8 @@ namespace TMA_Warehouse_solution.Controllers
         }
 
 
-        [Authorize(Roles = "Coordinator")]
+
+        [Authorize(Roles = "Coordinator, Administrator")]
         [HttpDelete]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
@@ -173,7 +230,7 @@ namespace TMA_Warehouse_solution.Controllers
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if (item.ContactPerson.Id != currentUser.Id)
+            if (item.ContactPerson.Id != currentUser.Id && !User.IsInRole("Administrator"))
             {
                 return Forbid();
             }

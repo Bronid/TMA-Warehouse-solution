@@ -1,69 +1,80 @@
-﻿@model List<TMA_Warehouse_solution.Controllers.CartController.CartItem>
+﻿@model TMA_Warehouse_solution.Controllers.CartController.OrderViewModel
 
 <h1>Cart Items</h1>
 
-@if (Model.Count > 0)
+@if (Model.ItemsInCurrentOrder.Count > 0)
 {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Item Id</th>
-                        <th>Quantity</th>
-                        <th>Comment</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-            @foreach (var item in Model)
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Item Id</th>
+                    <th>Quantity</th>
+                    <th>Comment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.ItemsInCurrentOrder)
             {
-                                <tr>
-                                    <td>@item.Id</td>
-                                    <td>
-                                        <input type="number" class="form-control" value="@item.Quantity" data-item-id="@item.Id" />
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" value="@item.Comment" data-item-id="@item.Id" />
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-primary update-btn" data-item-id="@item.Id">Update</button>
-                                        <button class="btn btn-danger delete-btn" data-item-id="@item.Id">Delete</button>
-                                    </td>
-                                </tr>
+                        <tr>
+                            <td>
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                                        <img src="@item.ImagePath" alt="Item Image" class="item-image" style="max-width: 50px; max-height: 50px;" />
+                        }
+                        else
+                        {
+                                        <p>No image available</p>
+                        }
+                            </td>
+                            <td>@item.Id</td>
+                            <td>
+                                <input type="number" class="form-control" value="@Model.CurrentOrder.FirstOrDefault(x => x.Id == item.Id)?.Quantity" data-item-id="@item.Id" />
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" value="@Model.CurrentOrder.FirstOrDefault(x => x.Id == item.Id)?.Comment" data-item-id="@item.Id" />
+                            </td>
+                            <td>
+                                <button class="btn btn-primary update-btn" data-item-id="@item.Id">Update</button>
+                                <button class="btn btn-danger delete-btn" data-item-id="@item.Id">Delete</button>
+                            </td>
+                        </tr>
             }
-                </tbody>
-            </table>
+            </tbody>
+        </table>
 
-            <button class="btn btn-success create-order-btn">Create Order</button>
+        <button class="btn btn-success create-order-btn">Create Order</button>
 }
 else
 {
-            <p>Cart is empty.</p>
+        <p>Cart is empty.</p>
 }
 
 @section scripts {
-            <script>
-                $(document).ready(function () {
-                    $('.update-btn').click(function () {
-                        var itemId = $(this).data('item-id');
-                        var quantity = $('input[data-item-id="' + itemId + '"]').eq(0).val();
-                        var comment = $('input[data-item-id="' + itemId + '"]').eq(1).val();
-                        $.post('@Url.Action("UpdateCartItem", "Cart")', { itemId: itemId, quantity: quantity, comment: comment }, function () {
-                            location.reload();
-                        });
-                    });
-
-                    $('.delete-btn').click(function () {
-                        var itemId = $(this).data('item-id');
-                        $.post('@Url.Action("RemoveCartItem", "Cart")', { itemId: itemId }, function () {
-                            location.reload();
-                        });
-                    });
-
-                    $('.create-order-btn').click(function () {
-                        $.post('@Url.Action("CreateOrder", "Order")', function () {
-                            location.reload();
-                        });
+        <script>
+            $(document).ready(function () {
+                $('.update-btn').click(function () {
+                    var itemId = $(this).data('item-id');
+                    var quantity = $('input[data-item-id="' + itemId + '"]').val();
+                    var comment = $('input[data-item-id="' + itemId + '"]').closest('tr').find('input[type="text"]').val();
+                    $.post('@Url.Action("UpdateCartItem", "Cart")', { itemId: itemId, quantity: quantity, comment: comment }, function () {
+                        location.reload();
                     });
                 });
-            </script>
+
+                $('.delete-btn').click(function () {
+                    var itemId = $(this).data('item-id');
+                    $.post('@Url.Action("RemoveCartItem", "Cart")', { itemId: itemId }, function () {
+                        location.reload();
+                    });
+                });
+
+                $('.create-order-btn').click(function () {
+                    $.post('@Url.Action("CreateOrder", "Order")', function () {
+                        location.reload();
+                    });
+                });
+            });
+        </script>
 }

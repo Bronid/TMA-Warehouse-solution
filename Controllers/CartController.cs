@@ -1,16 +1,31 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TMA_Warehouse_solution.Extensions;
+using TMA_Warehouse_solution.Models.Database;
+using TMA_Warehouse_solution.Models.Item;
 
 namespace TMA_Warehouse_solution.Controllers
 {
     public class CartController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public CartController(ApplicationDbContext dbcontext)
+        {
+            _context = dbcontext;
+        }
+
         public class CartItem
         {
             public Guid Id { get; set; }
             public int Quantity { get; set; }
             public string? Comment { get; set; }
+        }
+
+        public class OrderViewModel
+        {
+            public List<CartItem> CurrentOrder { get; set; }
+            public List<Item> ItemsInCurrentOrder { get; set; }
         }
 
         public IActionResult AddToCart(Guid itemId, int quantity, string comment)
@@ -32,7 +47,16 @@ namespace TMA_Warehouse_solution.Controllers
         public IActionResult List()
         {
             List<CartItem> currentOrder = HttpContext.Session.GetObject<List<CartItem>>("CurrentOrder") ?? new List<CartItem>();
-            return View(currentOrder);
+            var itemIdsInCurrentOrder = currentOrder.Select(o => o.Id).ToList();
+            var itemsInCurrentOrder = _context.itemModels.Where(i => itemIdsInCurrentOrder.Contains(i.Id)).ToList();
+
+            var viewModel = new OrderViewModel
+            {
+                CurrentOrder = currentOrder,
+                ItemsInCurrentOrder = itemsInCurrentOrder
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]

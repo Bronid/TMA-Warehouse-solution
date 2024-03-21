@@ -2,7 +2,7 @@
 
 <h1>Add Item</h1>
 
-<form method="post" action="AddItem">
+<form method="post" action="AddItem" enctype="multipart/form-data">
     <div>
         <label>Name:</label>
         <input type="text" class="form-control" name="Name" asp-for="Name" required />
@@ -12,7 +12,7 @@
         <select id="itemGroupId" name="ItemGroupId" class="form-control" required>
             @foreach (var group in ViewBag.ItemGroups)
             {
-                        <option value="@group.Id">@group.Name</option>
+                    <option value="@group.Id">@group.Name</option>
             }
         </select>
     </div>
@@ -21,7 +21,7 @@
         <select id="measurementId" name="MeasurementId" class="form-control" required>
             @foreach (var measurement in ViewBag.Measurements)
             {
-                        <option value="@measurement.Id">@measurement.Name</option>
+                    <option value="@measurement.Id">@measurement.Name</option>
             }
         </select>
     </div>
@@ -45,15 +45,15 @@
         <label>Storage Location:</label>
         <input type="text" class="form-control" name="StorageLocation" asp-for="StorageLocation" />
     </div>
-    <div>
-        <label>Photo URL:</label>
-        <input type="image" class="form-control" name="Photo" name="Photo"/>
+    <div class="form-group">
+        <label asp-for="Photo" class="control-label"></label>
+        <input asp-for="Photo" type="file" class="form-control" />
+        <span asp-validation-for="Photo" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
 
 <script>
-
     document.getElementById('itemGroupId').addEventListener('change', function() {
         document.getElementById('itemGroupIdHidden').value = this.value;
     });
@@ -61,5 +61,4 @@
     document.getElementById('measurementId').addEventListener('change', function() {
         document.getElementById('measurementIdHidden').value = this.value;
     });
-
 </script>

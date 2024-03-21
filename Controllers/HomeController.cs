@@ -21,7 +21,7 @@ namespace TMA_Warehouse_solution.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index(string filter)
+        public IActionResult Index(string filter, string sortBy)
         {
             var items = _context.itemModels
                 .Include(i => i.ItemGroup)
@@ -29,13 +29,17 @@ namespace TMA_Warehouse_solution.Controllers
                 .Include(i => i.ContactPerson)
                 .ToList();
 
-
             if (!string.IsNullOrEmpty(filter))
             {
                 items = items.Where(i => i.Name.Contains(filter)).ToList();
             }
 
-            return View(model:items);
+            if (sortBy == "price")
+            {
+                items = items.OrderBy(i => i.Price).ToList();
+            }
+
+            return View(items);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
